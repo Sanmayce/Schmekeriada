@@ -1,6 +1,11 @@
 # Schmekerezada - superfast Linux/Windows console tool to sort lines, internally
 Homepage: http://www.sanmayce.com/Schmekeriada/
 
+In the tar package there are full C sourcecode and the speed showdown logs between sort (GNU coreutils) 9.1 and Schmekerezada_(2023-Jul-10).
+In short, when sorting in-memory (i.e. not stressing virtual memory), 'Schmekerezada' is faster than 'sort'.
+
+![Schmekerezada](https://github.com/Sanmayce/Schmekeriada/assets/14062548/0e499126-d963-4fc7-8eaa-6f5b5fe03c2e)
+
 One of the benchmarks - sorting Linux kernel 38.9/33.1=1.17x faster than 'sort' on a "weak-n-old" educational laptop with Celeron N4100:
 
 ```
