@@ -1,7 +1,7 @@
-# Schmekeriada - superfast Linux/Windows console tool to sort lines
+# Schmekerezada - superfast Linux/Windows console tool to sort lines, internally
 Homepage: http://www.sanmayce.com/Schmekeriada/
 
-One of the benchmarks - sorting Linux kernel 38.9/33.1=1.17x faster than 'sort':
+One of the benchmarks - sorting Linux kernel 38.9/33.1=1.17x faster than 'sort' on a "weak-n-old" educational laptop:
 
 ```
 Machine:
@@ -56,6 +56,70 @@ LC_ALL=C
 ```
 
 The full benchmark script:
+```
+#sudo mkdir /tmp/ramdisk
+#sudo chmod 777 /tmp/ramdisk
+#sudo mount -t tmpfs -o size=32G myramdisk /tmp/ramdisk
+#sudo umount /tmp/ramdisk/
+
+cat /proc/version
+echo
+sudo fdisk -l
+echo
+lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT,MODEL,LABEL
+echo
+df -h -T
+echo
+echo Partition in use:
+df -hT .
+echo
+echo performance | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+echo
+lscpu
+echo
+free -h
+echo
+#[root@kaze Schmekerezada]# swapon -a
+#[root@kaze Schmekerezada]# swapon --show
+#NAME      TYPE        SIZE USED PRIO
+#/dev/sdb2 partition 128.8G   0B   -2
+#[root@kaze Schmekerezada]# swapoff -a
+#[root@kaze Schmekerezada]# swapon --show
+#[root@kaze Schmekerezada]# 
+
+echo Enabling swap...
+swapon -a
+echo Swap status:
+swapon --show
+echo
+export LC_ALL='C'
+locale
+echo $LC_ALL
+
+cp "$1" /dev/null
+date +%T
+perf stat -d ./Schmekerezada_CLANG_16.0.1_SSE4.2_TetraThread.elf "$1"
+sha1sum Schmekeriada.txt 
+perf stat -d ./Schmekerezada_GCC_13.0.1_SSE4.2_TetraThread.elf "$1"
+date +%T
+#/bin/time -v ./Schmekeriada_GCC_12.1.1_TetraThread.elf "$1"
+sort --version
+date +%T
+perf stat -d sort -o Linuxsort "$1" --parallel=4 -T ./
+date +%T
+#/bin/time -v sort -o Linuxsort "$1" --parallel=4 -T ./
+sha1sum Schmekeriada.txt 
+sha1sum Linuxsort
+date +%T
+perf stat -d sort -o Linuxsort "$1" --parallel=16 -T ./
+date +%T
+#/bin/time -v sort -o Linuxsort "$1" --parallel=16 -T ./
+rm Schmekeriada.txt 
+rm Linuxsort
+```
+
+On SATA SSD it is even faster, up to 44%:
 ```
 sort_vs_Schmekerezada.sh:
 
