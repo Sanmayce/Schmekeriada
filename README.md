@@ -1,7 +1,7 @@
 # Schmekerezada - superfast Linux/Windows console tool to sort lines, internally
 Homepage: http://www.sanmayce.com/Schmekeriada/
 
-One of the benchmarks - sorting Linux kernel 38.9/33.1=1.17x faster than 'sort' on a "weak-n-old" educational laptop:
+One of the benchmarks - sorting Linux kernel 38.9/33.1=1.17x faster than 'sort' on a "weak-n-old" educational laptop with Celeron N4100:
 
 ```
 Machine:
@@ -55,7 +55,7 @@ LC_ALL=C
       15.226412000 seconds sys
 ```
 
-The full benchmark script:
+The full benchmark script, 'bench_PARAMETER.sh':
 ```
 #sudo mkdir /tmp/ramdisk
 #sudo chmod 777 /tmp/ramdisk
