@@ -248,3 +248,57 @@ The benefits (compared to Windows' sort and Linux' sort) are:
 Enfun!  
 2023-Jul-12,  
 Sanmayce
+
+The quest for Fastest Quicksort C function (scalar or/and vector) continues...
+
+Here comes Charlatana v28...
+(the more proper spelling is German Scharlatana, meaning Tricksteress)
+
+<img width="1079" height="1795" alt="Quicksort_says_v28 pdf" src="https://github.com/user-attachments/assets/fc4a375b-492e-4653-acf7-83877ea9cac9" />
+
+The new exciting news is:
+
+- much more utilization of the CPU - the threading is dynamic (uses as many threads as there are present);
+
+- the branchless partitioning (the slowest part within the Quicksort - the timeeater) via AVX2 was achieved;
+
+- AVX512 is also added to the toolbox, reaching screaming speeds, like 114 million Keys-Per-Second which is 28.8 seconds for Human genome, on a laptop.
+
+So glad to share my latest co-work with Gemini AI, yes, Google's coding assistant is more than superinstrumental, in fact, it did the breakthrough I failed to do, namely to implement the UQWORD i.e. uint64_t sorting using AVX2 vectors, (in AVX512 the task is much more simplified). The problem in AVX2 instruction set was the lack of comparator for unsigned, it was only implemented by Intel engineers for signed, lazy-lazy.
+Two years ago, I struggled for two weeks and wrote the counterpart (C sourcecode included in the package as 'Charlatana_v1') myself, but the code was so slow that nearly saddened me, great example/exercise in vector coding, though. Gemini stepped in with a hack that solved the dozens of intrinsics and switches.
+Now, the great news - the fastest on Internet AVX2 sorter for uint64_t keys comes here, battletested and benchmarked. It is in form of two .h (C headers) files, one for AVX2, the other for AVX512.
+
+Nowadays, the fastest machine that I own is the 'Superpraseto/Suprapig' laptop Dell Precision 7560, i7-11850H (AVX512), 16 threads, 4x32GB DDR4 3200MHz, rank2, running Fedora Linux 42.
+
+The latest C compilers were used, GCC v15.2.1 and CLANG v20.1.8, to my surprise GCC generated definitely faster code,usually CLANG is better, hmm, something to write CLANG maintainers about...
+
+```
+// Quicksort 'Charlatana_UQWORD_AVX2' vs qsort():
+// Bottomline first: Quicksort 'Charlatana_UQWORD_AVX2' is 100,548,436 KPS / 9,675,092 KPS = 10.39x faster than qsort().
+// Testmachine: Laptop Dell Precision 7560, Core i7-11850H (Tiger Lake-H). 128GB DDR4 3200MHz, OS: Fedora Linux 42
+// Testcorpus: Human Genome (sorting all 8 bytes long chuncks - BBs - BuildingBlocks)
+// +----------------------------------------+------[ SORTED ]-+--------+-------------------------------------------------+
+// | Sort Function, (Compiler)              | Keys-Per-Second |   Time |                    Giga-Instructions-Per-Second |
+// +----------------------------------------+-----------------+--------+-------------------------------------------------+
+// | Charlatana_UQWORD_AVX512, GCC 15.2.1   | 114,867,502 KPS |  28.8s |   415,877,653,143i/ 28.8s = 14,440,196,289 GIPS |
+// | Charlatana_UQWORD_AVX2, GCC 15.2.1     | 100,548,436 KPS |  32.9s |   933,123,132,569i/ 32.9s = 28,362,405,245 GIPS |
+// | Charlatana_UQWORD_AVX512, CLANG 20.1.8 |  98,404,826 KPS |  33.6s |   945,379,013,838i/ 33.6s = 28,136,280,173 GIPS |
+// | Charlatana_UQWORD_AVX2, CLANG 20.1.8   |  87,842,997 KPS |  37.7s | 1,314,843,354,298i/ 37.7s = 34,876,481,546 GIPS |
+// | qsort(),GCC 15.2.1                     |   9,675,092 KPS | 342.4s | 2,642,946,084,482i/342.4s =  7,718,884,592 GIPS |
+// | qsort(),CLANG 20.1.8                   |   8,881,970 KPS | 373.0s | 2,408,798,523,104i/373.0s =  6,457,904,887 GIPS |
+// +----------------------------------------+-----------------+--------+-------------------------------------------------+
+// Note1: Memory footprint is 29,120,748 KB, meaning 32GB RAM are needed.
+// Note2: The third Performance statistic, GIPS, is not telling well how fast the compiled-function is, the KPS is the "story teller".
+// Note3: The CPU utilization is quite qood (FOR VECTOR CODE), "8.960 CPUs utilized", for the TOP (GCC) result.
+// Note4: The testfile is highly redundant (971:1), unique UQWORD-wise, "Unique keys: 3,411,451", that is 3,313,061,624 non-Unique : 3,411,451 Unique.
+// Note5: Just wanted to see the single-threaded Charlatana_UQWORD_AVX2 what delivers, "Total Performance: 36,650,159 keys-per-second", i.e. 3x slower it is.
+```
+
+So, the full package with the sourcecode is downloadable (no licenses, 100% FREE) at:
+​https://drive.google.com/file/d/1uFYMDxwRvIIDbmowc4kwYBNw-2WpLgeD/view?usp=sharing​​​
+
+For those who wonder what is the fuss about, this function is the go-to when 64bit pointers are to be sorted. Even more so for 128bit hashes (have it already, it handles 16 bytes in memcmp() style) which form the buckets for deduplication and such tasks/speedups.
+
+Enfun!  
+2026-Mar-18,  
+Sanmayce
